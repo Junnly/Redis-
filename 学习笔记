@@ -133,12 +133,65 @@ example: public class JedisDemo{
  LinkedList使用双向向链表方式
  双向链表中增加数据
  双向链表删除数据
+两端添加：
+  lpush mylist a b c  从left左侧开始添加，---c--b--a---
+  lpush mylist 1 2 3  从left左侧开始添加，---3--2--1----c--b--a--
+  rpush mylist2 a b c  从right右侧开始添加，--a--b--c---
+  rpush mylist2 1 2 3  从right右侧开始添加，--a--b--c--1--2--3---
+查看链表：
+  lrange mylist 0 5        输出：321cba
+  lrange mylist2 0 -1      输出：abc123        -1表示到链表的最后一个
+  lrange mylist2 0 -2      输出：abc12         -2表示到链表的倒数第二个
+两端弹出：
+  lpop mylist             从left弹出 “3”
+  lpop mylist  0 -1       从left弹出 21cba
+  rpop mylist             从right弹出 “3”
+获取列表元素个数：
+  llen mylist 
+扩展命令：
+  lpushx mylist x     查看链表： x21cba
+  rpushx mylist2 x    查看链表： abc123x
+  lrem mylist  2 3  从前面向后删除2个3
+  lrem mylist -2 1  从后面向前删除2个1
+  lrem mylist  0 2  删除里面的所有2 
+  lset mylist 3 mm  在链表第三个位置设置角标为mm ,会出现在地4个位置上
+  linsert mylist before b 11  在链表的b前面插入11
+  linsert mylist after b 22  在链表的b后面插入22
+  rpoplpush mylist1 mylist2 将mylist1的值右端弹出再从左边压入到mylist2中
+  
+  存储set：
+  没有顺序的数据集合，与list不同，set中不允许出现重复的元素，可包含最大元素数量和list相同4294967295个。
+ 存储set常用命令：
+ 添加删除元素；获得集合中的元素；集合中的差集运算，集合中的交集运算；集合中的并集运算；扩展命令。
+ sadd myset a b c a 1 2 3  由于不会存在重复的值 所以321abc
+ srem myset 1 2              3abc
+ sismember myset a           a如果是myset成员 即返回1 否则返回0
  
+ 集合的差集运算：
+ sadd mya1 a b c 
+ sadd myb1 a c 1 2 
+ sdiff mya1 myb1   返回 “b”      将a1看成主表 找a1有b1没有的
+ sdiff myb1 myb2   返回 ”1“ ”2“  将b1看成主表 找b1有而a1没有的
  
+ 集合的交集运算：
+ sadd mya2 a b c
+ sadd myb2 a c 1 2
+ sinter mya2 myb2   返回"c""a"
  
+ 集合的并集运算：
+ sadd mya3 a b c
+ sadd myb3 a c 1 2 
+ sunion mya3 myb3   返回"c""2""b""a""1"
  
+ 扩展命令：
+ smember myset           查看集合myset的成员
+ scard   myset           查看集合myset的数量
+ srandmember myset       随机返回集合中的一个值
+ sdiffstore my1 mya1 myb1       对mya1,myb1两个集合中做差集运算并将结果存储到my1中
+ sinterstore my2 mya2 myb2      对mya2,myb2两个集合中做交集运算并将结果存储到my2中
+ sunionstore my3 mya3 myb3      对mya3,myb3两个集合中做并集运算并将结果存储到my3中
  
- 
+ set使用场景：跟踪具有唯一性的信息，如客户ID，使用者IP，以及用于维护数据对象之间的关联关系。
  
  
  
