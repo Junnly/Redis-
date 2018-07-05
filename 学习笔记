@@ -193,11 +193,54 @@ example: public class JedisDemo{
  
  set使用场景：跟踪具有唯一性的信息，如客户ID，使用者IP，以及用于维护数据对象之间的关联关系。
  
+ 存储Sorted-Set:
+     与set区别：sorted-set的每一个值都与一个分数与之相关联，Redis正式通过分数将Sorted-set集合中的值从小到大排序，
+               需要指出的是在sorted-set中成员的值必须唯一，可是分数却可以不唯一；sroted-set中的成员在集合的位置是有序的。
+	       主要应用于游戏排名和微博热点话题，游戏积分排行榜，构建索引数据。
+     存储sorted-set 常用命令：添加元素，获得元素，删除元素，范围查询；扩展命令。
+
+          添加元素：zadd mysort 70 zs 80 ls 90 ww
+	           zadd mysort 100 zs         此时由于之前已经存在一个zs，所以只将100 重新给zs，并且返回（integer） 0 ，表示没有成员改变。
+          获得元素分数：zscore  mysort zs      此时返回的值是100.
+          获得成员个数：zcard mysort  
+	  删除某个元素：zrem mysort zs ls
+	  查询元素名称：zrange mysort 0 -1                                      获得范围从0到-1 的所有元素的名称
+	  查询元素名称并带有分数并从小到大排序：zrange mysort 0 -1 withscores     获得范围从0到-1 的所有元素的名称及对应分数，并由小到大排序。
+	  查询元素名称并带有分数并从大到小排序：zrevrange mysort 0 -1 withscores  获得范围从0到-1 的所有元素的名称及对应分数，并由从大到小排序。
+	  按照排名的范围进行删除：zremrangebyrank mysort 0 4                     删除排名从1到5的5个元素
+	  按照分数的范围进行删除：zremrangebyscore mysort 80 100                 删除分数从80到100的所有元素
+	   
+	  扩展命令：
+	     查询元素名称以分数为范围 ： zrangebyscore mysort 0 100                                          查询分数在0到100中的所有元素名称
+	     查询元素名称以分数为范围并带有分数 ： zrangebyscore mysort 0 100  withscores                     查询分数在0到100中的所有元素名称及分数
+	     查询元素名称以分数为范围 ： zrangebyscore mysort 0 100                                          查询分数在0到100中的所有元素名称
+	     查询元素名称以分数和排名前2位为标准：zrangebyscore mysort  0  100  withscores limit 0 2          查询分数在从0到100范围内，从小到大排列的，前两位的元素名称以及分数
+	     自加：zincrby mysort 5 ls                                                                     ls的分数加5 ，返回值为计算过的分数
+	     计算成员在一定范围内的个数：zcount mysort 80 90                                                 计算集合Mysort在80分到90分之间的元素个数
+ Redis的keys的通用操作：
+      所有Keys的查看：Keys *
+      以my开头的keys查看：Keys my?
+      删除：del my1 my2 my3
+      判断是否存在：exists  mya1   返回值为1表示存在，反之则不存在
+      重命名：rename company  newconpany(新名字）
+      设置过期时间：expire newcompany 1000(1000秒）
+      查看剩余时间：ttl newcompany   如果没有设置过期时间，则会返回-1
+      获得成员类型：type newcompany  返回String
+                   type mylist      返回list
+		   type myset       返回set
+		   type myhash      返回hash
+		   type mysort      返回zset
+Redis的持久化概念：将内存中的数据同步到硬盘上
+       持久化方式：
+              RDB持久化：在指定的时间之内，将内存中的数据及快照写入到磁盘。
+	      AOF持久化：以日志的方式记录服务器的每一次操作，在REDIS启动之初，读取文件重新构建数据库，保证自启动之后数据的完整性
+	      无持久化：通过配置，禁用Redis的持久化功能
+	      同时使用RDB和AOF两种持久化功能
+	      
+       
+      
+      
+      
  
  
- 
- 
- 
- 
- 
- 
+
