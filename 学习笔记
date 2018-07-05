@@ -1,1 +1,146 @@
 # Redis-
+
+
+ MySQL是关系型数据库，是持久化存储的，查询检索的话，会涉及到磁盘IO操作，为了提高性能，可以使用缓存技，用户首先去memcached查询数据，如果未查询到（即缓存未命中），才去MySQL中查询数据，查询到的数据会更新到缓存数据库中，提供给下次可能进行的查询。提高了数据查询方面的性能。 Redis和memcached都是缓存数据库，可以大大提升高数据量的web访问速度，Redis的value可以是string、list、set、hash、sorted set这些，功能更加强大。
+  web应用中一般采用MySQL+Redis的方式，web应用每次先访问Redis，如果没有找到数据，才去访问MySQL。
+  Redis是内存数据库，数据保存在内存中，访问速度快。MySQL是关系型数据库，功能强大，存储在磁盘中，数据访问速度慢。像memcached，MongoDB，Redis等，都属于No sql系列。
+  
+  
+  
+No SQL : not only SQL 泛指非关系型的数据库，
+为什么需要No SQL:高并发读写；海量数据的高效率存储；高扩展性和高可用性；
+ 
+Redis:
+       支持多种键值对类型:字符串类型;列表类型;有序集合类型;散列类型;集合类型.
+       应用场景:缓存;任务队列;网站访问统计;数据过期处理;分布式集群架构中的session分离.
+       
+安装:虚拟机Linux系统 安装yum install gcc-c++ (环境)
+     利用zip上传文件到虚拟机,tar -zxvf Redis压缩包名 (解压文件)
+     cd redis解压后的文件里 make (进行基本编译,没有安装GCC环境会报错)
+     cd ~  (返回ROOT下)
+     cp redis.conf /usr/local/redis   (拷贝redis到/usr/local/redis路径下)
+     cd redis.conf
+     cd bin
+     ./redis-server  (前端启动redis,当前窗口不能操作其他命令,不推荐)
+     ctr C  (停止当前启动)
+     cd .. (返回redis目录)
+     vim redis.conf ( 修改redis.conf文件)
+     将daemonize no 修改成daemonize yes 
+     wq 保存退出
+     ./bin/reids-server ./redis.conf  (前端启动加载redis.conf文件,变成后端启动)
+     进入redis客户端: ./bin/redis-cli
+     当前页面不变  ps -ef | grep -i redis  (查找redis启动 redis默认占用6379端口)
+     关闭redis: ./bin/redis-cli shutdown
+     
+     
+ myeclipse 的jar包放在lib里,并且右键选中jar包并单击buil的path 添加到构建路径里.即添加到referrenced libraries里
+ 
+ Jedis 是Redis官方首选的JAVA客户端开发包, http://github.com/xetorthio/jedis
+example: public class JedisDemo{
+          
+	  //单实例连接方式
+	  
+	  public void demo1(){
+	    //设置IP地址和端口
+	    Jedis jedis = new Jedis("127.0.0.1",6379);
+	    //保存数据
+	    jedis.set("name","imooc");
+	    //获取数据
+	   String value =  jedis.get("name");
+	   System.out.printil(value);
+	   //释放资源
+	   jedis.close();
+        }
+	
+     //连接池连接方式
+     public void demo2(){
+        //获得连接池连接配置对象
+         JedisPoolConfig config = new JedisPoolConfig();
+	 //设置最大连接数
+	 config.setMaxTotal(30);
+	 //设置最大空闲连接数
+	 config.setMaxIdle(10);
+	 //获得连接池
+	 JedisPool  =new JedisPool(config,"192.168.30.132",6379);
+	 //获得核心对象
+	 Jedis jedis = null ;
+	 try{
+	    //通过连接池获得连接
+	    jedis = jedisPool.getResource();
+	    //设置数据
+	    jedis.set("name","imooc");
+	    //获取数据
+	    String value = jedis.get("name");
+	    System.out.println(value);
+	    }catch(Exception e ){
+	          e.printStackTrace();
+		  }finally{
+		    //释放资源
+		    if(jedis != null ){
+		      jedis.close();
+		      }if(jedisPool != null){
+		         jedisPool.close();
+			 }
+		}
+	     
+	     
+     
+ Redis的数据结构:
+   *字符串(String)
+   字符串列表(list)
+   字符串集合(set)
+   有序字符串集合(sorted set)
+   *哈希(hash)
+   key不要太长(1024个字节)或太短
+   
+   存储String常用命令:赋值,取值,删除,数值增减,扩展命令.
+                     set compony imooc   返回的(integer) 1 表示改变的值有几个
+		     get compony  返回imooc
+		     getset  compony baidu 先获取再赋值
+		     del compony
+		     incr num  (自加1)        1
+		     decr num  (自减1)        0
+		     incrby  num  2(加2)      2
+		     decrby  num  4(减4)     -2
+		     append num  5  (在num后拼接5)   
+		                         返回(integer)2   意为2个字符
+					 get num  返回值为 -25
+   
+ 存储Hash :String Key 和String Value 的map容器
+          每一个Hash可以存储4294967295个键值对
+	  
+ 存储Hash常用命令:赋值,取值,删除,数值增减,扩展命令.
+                     hset myhash age 18
+		     hset myhash username rose age 21
+		     hget age  返回   21
+		     hget username  返回 rose
+		     hget myhash  username age  返回  rose 21
+		     hgetall myhash   返回  "username""rose""age""21"
+		     hdel username age (删除多个属性)
+		     del  myhash (删除整个集合)
+		     hincr myhash age  (自加1)        22
+		     hdecr myhash age  (自减1)        21
+		     hincrby  myhash age  2(加2)      23
+		     hdecrby  myhash age  4(减4)      19
+		     hexists  myhash username  返回1即存在 0不存在
+		     hlen myhash  返回的是属性个数  (integer)  2
+		     hkeys myhash  返回的是所有属性的名称 "username""age"
+		     hvalues myhash  返回的是所有属性的值 "rose""19"
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
