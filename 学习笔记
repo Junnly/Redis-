@@ -127,8 +127,12 @@ example: public class JedisDemo{
 		     hkeys myhash  返回的是所有属性的名称 "username""age"
 		     hvalues myhash  返回的是所有属性的值 "rose""19"
  
- 
- 
+ 存储list常用命令:两端添加，查看列表，两端弹出，获取列表元素个数，扩展命令。
+ 存储list方式：
+ ArrayList使用数组方式
+ LinkedList使用双向向链表方式
+ 双向链表中增加数据
+ 双向链表删除数据
  
  
  
